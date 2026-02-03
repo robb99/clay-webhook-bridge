@@ -7,7 +7,8 @@ Type=simple
 User=clay
 WorkingDirectory=/opt/clay-webhook-bridge
 Environment=CLAY_WEBHOOK_TOKEN=replace-me
-ExecStart=/usr/bin/python3 -m clay_webhook_bridge --host 0.0.0.0 --port 8789 --token-env CLAY_WEBHOOK_TOKEN --log /var/log/clay-webhook-bridge.jsonl
+Environment=CLAWDBOT_GATEWAY_TOKEN=replace-me
+ExecStart=/usr/bin/python3 -m clay_webhook_bridge --host 0.0.0.0 --port 8789 --token-env CLAY_WEBHOOK_TOKEN --log /var/log/clay-webhook-bridge.jsonl --gateway-url ws://YOUR_MAC_MINI_IP:PORT --gateway-token-env CLAWDBOT_GATEWAY_TOKEN
 Restart=always
 RestartSec=3
 

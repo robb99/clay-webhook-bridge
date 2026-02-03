@@ -23,7 +23,9 @@ pip install -r requirements.txt
 ## Run (CLI)
 ```bash
 export CLAY_WEBHOOK_TOKEN="your-shared-token"
-python -m clay_webhook_bridge --host 0.0.0.0 --port 8789 --token-env CLAY_WEBHOOK_TOKEN --log /var/log/clay-webhook-bridge.jsonl
+python -m clay_webhook_bridge --host 0.0.0.0 --port 8789 --token-env CLAY_WEBHOOK_TOKEN --log /var/log/clay-webhook-bridge.jsonl \
+  --gateway-url "ws://YOUR_MAC_MINI_IP:PORT" \
+  --gateway-token-env CLAWDBOT_GATEWAY_TOKEN
 ```
 
 ## Test with curl

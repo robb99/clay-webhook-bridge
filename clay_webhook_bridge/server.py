@@ -17,6 +17,9 @@ from fastapi.responses import JSONResponse
 class Settings:
     token: str
     log_path: Path
+    gateway_url: Optional[str] = None
+    gateway_token: Optional[str] = None
+    gateway_timeout_ms: int = 10000
 
 
 def _utc_now_iso() -> str:
@@ -43,7 +46,13 @@ def build_event_payload(body: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def build_wake_command(event_compact_json: str) -> list[str]:
+def build_wake_command(
+    event_compact_json: str,
+    *,
+    gateway_url: Optional[str] = None,
+    gateway_token: Optional[str] = None,
+    gateway_timeout_ms: int = 10000,
+) -> list[str]:
     """Build a safe argv list to wake OpenClaw/Clawdbot via the Gateway.
 
     We use `clawdbot gateway call cron.wake` because the CLI does not expose a
@@ -55,14 +64,23 @@ def build_wake_command(event_compact_json: str) -> list[str]:
         "text": f"HA_EVENT {event_compact_json}",
     }
 
-    return [
+    cmd = [
         "clawdbot",
         "gateway",
         "call",
         "cron.wake",
         "--params",
         json.dumps(params, separators=(",", ":"), ensure_ascii=False),
+        "--timeout",
+        str(gateway_timeout_ms),
     ]
+
+    if gateway_url:
+        cmd += ["--url", gateway_url]
+    if gateway_token:
+        cmd += ["--token", gateway_token]
+
+    return cmd
 
 
 def run_wake(cmd: list[str]) -> tuple[bool, Optional[str]]:
@@ -127,7 +145,12 @@ def create_app(settings: Settings) -> FastAPI:
 
         event_payload = build_event_payload(body)
         compact_json = _json_compact(event_payload)
-        cmd = build_wake_command(compact_json)
+        cmd = build_wake_command(
+            compact_json,
+            gateway_url=settings.gateway_url,
+            gateway_token=settings.gateway_token,
+            gateway_timeout_ms=settings.gateway_timeout_ms,
+        )
 
         result_ok, error_text = run_wake(cmd)
 
