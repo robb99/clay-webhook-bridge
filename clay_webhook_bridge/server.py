@@ -44,14 +44,24 @@ def build_event_payload(body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def build_wake_command(event_compact_json: str) -> list[str]:
+    """Build a safe argv list to wake OpenClaw/Clawdbot via the Gateway.
+
+    We use `clawdbot gateway call cron.wake` because the CLI does not expose a
+    `wake` subcommand directly.
+    """
+
+    params = {
+        "mode": "now",
+        "text": f"HA_EVENT {event_compact_json}",
+    }
+
     return [
         "clawdbot",
         "gateway",
-        "wake",
-        "--mode",
-        "now",
-        "--text",
-        f"HA_EVENT {event_compact_json}",
+        "call",
+        "cron.wake",
+        "--params",
+        json.dumps(params, separators=(",", ":"), ensure_ascii=False),
     ]
 
 

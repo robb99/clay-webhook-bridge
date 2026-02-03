@@ -1,6 +1,6 @@
 # clay-webhook-bridge
 
-Event-driven Home Assistant -> OpenClaw bridge. Receives POST webhooks, validates a shared token, and calls `clawdbot gateway wake` with a compact JSON payload. All requests (valid and invalid) are logged to a JSONL file.
+Event-driven Home Assistant -> OpenClaw bridge. Receives POST webhooks, validates a shared token, and calls `clawdbot gateway call cron.wake` with a compact JSON payload. All requests (valid and invalid) are logged to a JSONL file.
 
 ## Requirements
 - Python 3.10+ (works with 3.8+ but 3.10+ recommended)
