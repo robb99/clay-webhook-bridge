@@ -1,0 +1,34 @@
+rest_command:
+  clay_webhook:
+    url: "http://YOUR_VM_IP:8789/webhook"
+    method: POST
+    headers:
+      X-Ping-Token: "YOUR_SHARED_TOKEN"
+      Content-Type: "application/json"
+    payload: >
+      {"event_type":"{{ event_type }}","source":"home_assistant","camera_entity":"{{ camera_entity }}","message":"{{ message }}","ts":"{{ now().isoformat() }}"}
+
+automation:
+  - alias: "Front door motion -> OpenClaw"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.front_door_motion
+        to: "on"
+    action:
+      - service: rest_command.clay_webhook
+        data:
+          event_type: "front_door_motion"
+          camera_entity: "camera.front_door"
+          message: "Front door motion detected"
+
+  - alias: "Doorbell pressed -> OpenClaw"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.doorbell_pressed
+        to: "on"
+    action:
+      - service: rest_command.clay_webhook
+        data:
+          event_type: "doorbell_pressed"
+          camera_entity: "camera.doorbell"
+          message: "Doorbell pressed"
